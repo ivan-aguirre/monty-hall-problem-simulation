@@ -15,10 +15,12 @@ class Game:
 
     @staticmethod
     def _present_doors():
-        return [Game.CAR, Game.GOAT, Game.GOAT]
+        doors = [Game.GOAT, Game.GOAT, Game.GOAT]
+        doors[random.choice(range(0, len(doors)))] = Game.CAR
+        return doors
 
     def _chose_door(self):
-        valid_doors = list(range(0, len(self.doors)))
+        valid_doors = range(0, len(self.doors))
         return random.choice(valid_doors)
 
     def _possible_choices(self, enum_criteria):
@@ -34,7 +36,7 @@ class Game:
         self.chosen_door = random.choice(possible_doors_enum)
 
     def play(self):
-        self.doors = Game._present_doors()
+        self.doors = self._present_doors()
         self.winning_door = self.doors.index(Game.CAR)
         self.chosen_door = self._chose_door()
         self.revealed_door = self._reveal_door()
