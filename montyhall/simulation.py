@@ -1,6 +1,5 @@
 import argparse
 import random
-from itertools import starmap
 
 
 class Game:
@@ -16,24 +15,28 @@ class Game:
     @staticmethod
     def _present_doors():
         doors = [Game.GOAT, Game.GOAT, Game.GOAT]
-        doors[random.choice(range(0, len(doors)))] = Game.CAR
+        doors[random.randint(0, len(doors) - 1)] = Game.CAR
         return doors
 
     def _chose_door(self):
         valid_doors = range(0, len(self.doors))
         return random.choice(valid_doors)
 
-    def _possible_choices(self, enum_criteria):
-        return list(starmap(lambda door_position, door_content: door_position,
-                            filter(enum_criteria, enumerate(self.doors))))
-
     def _reveal_door(self):
-        possible_choices = self._possible_choices(lambda t: t[0] != self.chosen_door and t[1] != Game.CAR)
+        def remaining_doors(index_value_tuple):
+            door_num, door_value = index_value_tuple
+            return door_num != self.chosen_door and door_value != Game.CAR
+
+        # we could simplify this code assuming that len(self.doors) is always 3...
+        possible_choices = list(map(lambda t: t[0], filter(remaining_doors, enumerate(self.doors))))
+
         return random.choice(possible_choices)
 
     def change_door(self):
-        possible_doors_enum = self._possible_choices(lambda t: t[0] != self.chosen_door and t[0] != self.revealed_door)
-        self.chosen_door = random.choice(possible_doors_enum)
+        # we could simplify this code assuming that len(self.doors) is always 3...
+        valid_doors = range(0, len(self.doors))
+        x = [door_num for door_num in valid_doors if door_num not in (self.chosen_door, self.revealed_door)]
+        self.chosen_door = random.choice(x)
 
     def play(self):
         self.doors = self._present_doors()
